@@ -21,9 +21,10 @@ from .make_border_map import MakeBorderMap
 from .make_shrink_map import MakeShrinkMap
 from .random_crop_data import EastRandomCropData, RandomCropImgMask
 from .make_pse_gt import MakePseGt
-
-from .rec_img_aug import RecAug, RecConAug, RecResizeImg, ClsResizeImg, \
-    SRNRecResizeImg, NRTRRecResizeImg, SARRecResizeImg, PRENResizeImg, RFLRecResizeImg
+from .rec_img_aug import BaseDataAugmentation, RecAug, RecConAug, RecResizeImg, ClsResizeImg, \
+    SRNRecResizeImg, GrayRecResizeImg, SARRecResizeImg, PRENResizeImg, \
+    ABINetRecResizeImg, SVTRRecResizeImg, ABINetRecAug, VLRecResizeImg, SPINRecResizeImg, RobustScannerRecResizeImg, \
+    RFLRecResizeImg
 from .ssl_img_aug import SSLRotateResize
 from .randaugment import RandAugment
 from .copy_paste import CopyPaste
@@ -34,12 +35,13 @@ from .label_ops import *
 from .east_process import *
 from .sast_process import *
 from .pg_process import *
-from .gen_table_mask import *
+from .table_ops import *
 
 from .vqa import *
 
 from .fce_aug import *
 from .fce_targets import FCENetTargets
+from .ct_process import *
 
 
 def transform(data, ops=None):

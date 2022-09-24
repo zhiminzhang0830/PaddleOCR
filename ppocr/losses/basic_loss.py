@@ -51,7 +51,11 @@ class CELoss(nn.Layer):
                 soft_label = True
             else:
                 soft_label = False
-            loss = F.cross_entropy(x, label=label, soft_label=soft_label, ignore_index=self.ignore_index)
+            loss = F.cross_entropy(
+                x,
+                label=label,
+                soft_label=soft_label,
+                ignore_index=self.ignore_index)
         return loss
 
 
@@ -61,19 +65,19 @@ class KLJSLoss(object):
                         ], "mode can only be one of ['kl', 'KL', 'js', 'JS']"
         self.mode = mode
 
-    def __call__(self, p1, p2, reduction="mean"):
+    def __call__(self, p1, p2, reduction="mean", eps=1e-5):
 
         if self.mode.lower() == 'kl':
             loss = paddle.multiply(p2,
-                                   paddle.log((p2 + 1e-5) / (p1 + 1e-5) + 1e-5))
-            loss += paddle.multiply(
-                p1, paddle.log((p1 + 1e-5) / (p2 + 1e-5) + 1e-5))
+                                   paddle.log((p2 + eps) / (p1 + eps) + eps))
+            loss += paddle.multiply(p1,
+                                    paddle.log((p1 + eps) / (p2 + eps) + eps))
             loss *= 0.5
         elif self.mode.lower() == "js":
             loss = paddle.multiply(
-                p2, paddle.log((2 * p2 + 1e-5) / (p1 + p2 + 1e-5) + 1e-5))
+                p2, paddle.log((2 * p2 + eps) / (p1 + p2 + eps) + eps))
             loss += paddle.multiply(
-                p1, paddle.log((2 * p1 + 1e-5) / (p1 + p2 + 1e-5) + 1e-5))
+                p1, paddle.log((2 * p1 + eps) / (p1 + p2 + eps) + eps))
             loss *= 0.5
         else:
             raise ValueError(
@@ -158,7 +162,9 @@ class LossFromOutput(nn.Layer):
         self.reduction = reduction
 
     def forward(self, predicts, batch):
-        loss = predicts[self.key]
+        loss = predicts
+        if self.key is not None and isinstance(predicts, dict):
+            loss = loss[self.key]
         if self.reduction == 'mean':
             loss = paddle.mean(loss)
         elif self.reduction == 'sum':

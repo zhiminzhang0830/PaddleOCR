@@ -4,11 +4,11 @@ English | [简体中文](README_ch.md)
 
 PPOCRLabelv2 is a semi-automatic graphic annotation tool suitable for OCR field, with built-in PP-OCR model to automatically detect and re-recognize data. It is written in Python3 and PyQT5, supporting rectangular box, table, irregular text and key information annotation modes. Annotations can be directly used for the training of PP-OCR detection and recognition models.
 
-| regular text annotation                              | table annotation                                       |
+|               regular text annotation               |                table annotation                |
 | :-------------------------------------------------: | :--------------------------------------------: |
-| <img src="./data/gif/steps_en.gif" width="80%"/>    | <img src="./data/gif/table.gif" width="100%"/> |
-| **irregular text annotation**                        | **key information annotation**                               |
-| <img src="./data/gif/multi-point.gif" width="80%"/> | <img src="./data/gif/kie.gif" width="100%"/>   |
+|  <img src="./data/gif/steps_en.gif" width="80%"/>   | <img src="./data/gif/table.gif" width="100%"/> |
+|            **irregular text annotation**            |         **key information annotation**         |
+| <img src="./data/gif/multi-point.gif" width="80%"/> |  <img src="./data/gif/kie.gif" width="100%"/>  |
 
 ### Recent Update
 
@@ -59,7 +59,7 @@ PPOCRLabel can be started in two ways: whl package and Python script. The whl pa
 ```bash
 pip install PPOCRLabel  # install
 
-# Select label mode and run 
+# Select label mode and run
 PPOCRLabel  # [Normal mode] for [detection + recognition] labeling
 PPOCRLabel --kie True # [KIE mode] for [detection + recognition + keyword extraction] labeling
 ```
@@ -75,7 +75,7 @@ PPOCRLabel --kie True # [KIE mode] for [detection + recognition + keyword extrac
 pip3 install PPOCRLabel
 pip3 install trash-cli
 
-# Select label mode and run 
+# Select label mode and run
 PPOCRLabel  # [Normal mode] for [detection + recognition] labeling
 PPOCRLabel --kie True # [KIE mode] for [detection + recognition + keyword extraction] labeling
 ```
@@ -85,7 +85,7 @@ PPOCRLabel --kie True # [KIE mode] for [detection + recognition + keyword extrac
 pip3 install PPOCRLabel
 pip3 install opencv-contrib-python-headless==4.2.0.32
 
-# Select label mode and run 
+# Select label mode and run
 PPOCRLabel  # [Normal mode] for [detection + recognition] labeling
 PPOCRLabel --kie True # [KIE mode] for [detection + recognition + keyword extraction] labeling
 ```
@@ -96,7 +96,7 @@ If you modify the PPOCRLabel file (for example, specifying a new built-in model)
 ```bash
 cd ./PPOCRLabel  # Switch to the PPOCRLabel directory
 
-# Select label mode and run 
+# Select label mode and run
 python PPOCRLabel.py  # [Normal mode] for [detection + recognition] labeling
 python PPOCRLabel.py --kie True # [KIE mode] for [detection + recognition + keyword extraction] labeling
 ```
@@ -139,20 +139,24 @@ pip3 install dist/PPOCRLabel-1.0.2-py2.py3-none-any.whl
 10. Labeling result: the user can export the label result manually through the menu "File - Export Label", while the program will also export automatically if "File - Auto export Label Mode" is selected. The manually checked label will be stored in *Label.txt* under the opened picture folder. Click "File"-"Export Recognition Results" in the menu bar, the recognition training data of such pictures will be saved in the *crop_img* folder, and the recognition label will be saved in *rec_gt.txt*<sup>[4]</sup>.
 
 ### 2.2 Table Annotation
-The table annotation is aimed at extracting the structure of the table in a picture and converting it to Excel format, 
+The table annotation is aimed at extracting the structure of the table in a picture and converting it to Excel format,
 so the annotation needs to be done simultaneously with external software to edit Excel.
-In PPOCRLabel, complete the text information labeling (text and position), complete the table structure information 
+In PPOCRLabel, complete the text information labeling (text and position), complete the table structure information
 labeling in the Excel file, the recommended steps are:
 
-1. Table annotation: After opening the table picture, click on the `Table Recognition` button in the upper right corner of PPOCRLabel, which will call the table recognition model in PP-Structure to automatically label 
-the table and pop up Excel at the same time.
-   
-2. Change the recognition result: **label each cell** (i.e. the text in a cell is marked as a box). Right click on the box and click on `Cell Re-recognition`. 
+1. Table annotation: After opening the table picture, click on the `Table Recognition` button in the upper right corner of PPOCRLabel, which will call the table recognition model in PP-Structure to automatically label
+    the table and pop up Excel at the same time.
+
+2. Change the recognition result: **label each cell** (i.e. the text in a cell is marked as a box). Right click on the box and click on `Cell Re-recognition`.
    You can use the model to automatically recognise the text within a cell.
-   
+
 3. Mark the table structure: for each cell contains the text, **mark as any identifier (such as `1`) in Excel**, to ensure that the merged cell structure is same as the original picture.
 
-4. Export JSON format annotation: close all Excel files corresponding to table images, click `File`-`Export table JSON annotation` to obtain JSON annotation results.
+    > Note: If there are blank cells in the table, you also need to mark them with a bounding box so that the total number of cells is the same as in the image.
+
+4. ***Adjust cell order:*** Click on the menu  `View` - `Show Box Number` to show the box ordinal numbers, and drag all the results under the 'Recognition Results' column on the right side of the software interface to make the box numbers are arranged from left to right, top to bottom
+
+5. Export JSON format annotation: close all Excel files corresponding to table images, click `File`-`Export table JSON annotation` to obtain JSON annotation results.
 
 ### 2.3 Note
 
@@ -222,20 +226,13 @@ PPOCRLabel supports three ways to export Label.txt
 
 - Close application export
 
-
-### 3.4 Export Partial Recognition Results
-
-For some data that are difficult to recognize, the recognition results will not be exported by **unchecking** the corresponding tags in the recognition results checkbox. The unchecked recognition result is saved as `True` in the `difficult` variable in the label file `label.txt`.
-
-> *Note: The status of the checkboxes in the recognition results still needs to be saved manually by clicking Save Button.*
-
-### 3.5 Dataset division
+### 3.4 Dataset division
 
 - Enter the following command in the terminal to execute the dataset division script:
 
     ```
   cd ./PPOCRLabel # Change the directory to the PPOCRLabel folder
-  python gen_ocr_train_val_test.py --trainValTestRatio 6:2:2 --datasetRootPath ../train_data 
+  python gen_ocr_train_val_test.py --trainValTestRatio 6:2:2 --datasetRootPath ../train_data
   ```
 
   Parameter Description:
@@ -257,8 +254,8 @@ For some data that are difficult to recognize, the recognition results will not 
     |- word_003.jpg
     | ...
   ```
-  
-### 3.6 Error message
+
+### 3.5 Error message
 
 - If paddleocr is installed with whl, it has a higher priority than calling PaddleOCR class with paddleocr.py, which may cause an exception if whl package is not updated.
 

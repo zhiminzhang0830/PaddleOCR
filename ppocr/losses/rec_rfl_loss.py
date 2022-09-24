@@ -27,30 +27,29 @@ class RFLLoss(nn.Layer):
         super().__init__()
 
         self.cnt_loss = nn.MSELoss(**kwargs)
-        self.seq_loss = nn.CrossEntropyLoss(ignore_index=ignore_index) 
+        self.seq_loss = nn.CrossEntropyLoss(ignore_index=ignore_index)
 
     def forward(self, predicts, batch):
-        
+
         self.total_loss = {}
         total_loss = 0.0
         # batch [image, label, length, cnt_label]
         if predicts[0] is not None:
-            cnt_loss = self.cnt_loss(predicts[0], paddle.cast(batch[3], paddle.float32))
+            cnt_loss = self.cnt_loss(predicts[0],
+                                     paddle.cast(batch[3], paddle.float32))
             self.total_loss['cnt_loss'] = cnt_loss
             total_loss += cnt_loss
-            
+
         if predicts[1] is not None:
             targets = batch[1].astype("int64")
             label_lengths = batch[2].astype('int64')
-            batch_size, num_steps, num_classes = predicts[1].shape[0], predicts[1].shape[
-                1], predicts[1].shape[2]
+            batch_size, num_steps, num_classes = predicts[1].shape[0], predicts[
+                1].shape[1], predicts[1].shape[2]
             assert len(targets.shape) == len(list(predicts[1].shape)) - 1, \
                 "The target's shape and inputs's shape is [N, d] and [N, num_steps]"
-                
+
             inputs = predicts[1][:, :-1, :]
             targets = targets[:, 1:]
-
-            # inputs = paddle.reshape(predicts[1], [-1, predicts[1].shape[-1]])
 
             inputs = paddle.reshape(inputs, [-1, inputs.shape[-1]])
             targets = paddle.reshape(targets, [-1])

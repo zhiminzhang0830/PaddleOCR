@@ -28,7 +28,7 @@ from scipy.spatial import distance as dist
 
 import tools.infer.utility as utility
 from ppocr.utils.logging import get_logger
-from ppocr.utils.utility import get_image_file_list, check_and_read_gif
+from ppocr.utils.utility import get_image_file_list, check_and_read
 from ppocr.data import create_operators, transform
 from ppocr.postprocess import build_post_process
 import json
@@ -68,6 +68,23 @@ class TextDetector(object):
             postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
             postprocess_params["use_dilation"] = args.use_dilation
             postprocess_params["score_mode"] = args.det_db_score_mode
+        elif self.det_algorithm == "DB++":
+            postprocess_params['name'] = 'DBPostProcess'
+            postprocess_params["thresh"] = args.det_db_thresh
+            postprocess_params["box_thresh"] = args.det_db_box_thresh
+            postprocess_params["max_candidates"] = 1000
+            postprocess_params["unclip_ratio"] = args.det_db_unclip_ratio
+            postprocess_params["use_dilation"] = args.use_dilation
+            postprocess_params["score_mode"] = args.det_db_score_mode
+            pre_process_list[1] = {
+                'NormalizeImage': {
+                    'std': [1.0, 1.0, 1.0],
+                    'mean':
+                    [0.48109378172549, 0.45752457890196, 0.40787054090196],
+                    'scale': '1./255.',
+                    'order': 'hwc'
+                }
+            }
         elif self.det_algorithm == "EAST":
             postprocess_params['name'] = 'EASTPostProcess'
             postprocess_params["score_thresh"] = args.det_east_score_thresh
@@ -111,6 +128,9 @@ class TextDetector(object):
             postprocess_params["beta"] = args.beta
             postprocess_params["fourier_degree"] = args.fourier_degree
             postprocess_params["box_type"] = args.det_fce_box_type
+        elif self.det_algorithm == "CT":
+            pre_process_list[0] = {'ScaleAlignedShort': {'short_size': 640}}
+            postprocess_params['name'] = 'CTPostProcess'
         else:
             logger.info("unknown det_algorithm:{}".format(self.det_algorithm))
             sys.exit(0)
@@ -232,11 +252,14 @@ class TextDetector(object):
             preds['f_score'] = outputs[1]
             preds['f_tco'] = outputs[2]
             preds['f_tvo'] = outputs[3]
-        elif self.det_algorithm in ['DB', 'PSE']:
+        elif self.det_algorithm in ['DB', 'PSE', 'DB++']:
             preds['maps'] = outputs[0]
         elif self.det_algorithm == 'FCE':
             for i, output in enumerate(outputs):
                 preds['level_{}'.format(i)] = output
+        elif self.det_algorithm == "CT":
+            preds['maps'] = outputs[0]
+            preds['score'] = outputs[1]
         else:
             raise NotImplementedError
 
@@ -244,7 +267,7 @@ class TextDetector(object):
         post_result = self.postprocess_op(preds, shape_list)
         dt_boxes = post_result[0]['points']
         if (self.det_algorithm == "SAST" and self.det_sast_polygon) or (
-                self.det_algorithm in ["PSE", "FCE"] and
+                self.det_algorithm in ["PSE", "FCE", "CT"] and
                 self.postprocess_op.box_type == 'poly'):
             dt_boxes = self.filter_tag_det_res_only_clip(dt_boxes, ori_im.shape)
         else:
@@ -273,7 +296,7 @@ if __name__ == "__main__":
         os.makedirs(draw_img_save)
     save_results = []
     for image_file in image_file_list:
-        img, flag = check_and_read_gif(image_file)
+        img, flag, _ = check_and_read(image_file)
         if not flag:
             img = cv2.imread(image_file)
         if img is None:

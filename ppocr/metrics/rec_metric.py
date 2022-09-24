@@ -76,9 +76,7 @@ class RecMetric(object):
 
 
 class CNTMetric(object):
-    def __init__(self,
-                 main_indicator='acc',
-                 **kwargs):
+    def __init__(self, main_indicator='acc', **kwargs):
         self.main_indicator = main_indicator
         self.eps = 1e-5
         self.reset()
@@ -98,9 +96,7 @@ class CNTMetric(object):
             all_num += 1
         self.correct_num += correct_num
         self.all_num += all_num
-        return {
-            'acc': correct_num / (all_num + self.eps),
-        }
+        return {'acc': correct_num / (all_num + self.eps), }
 
     def get_metric(self):
         """

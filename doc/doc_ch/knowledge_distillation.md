@@ -428,6 +428,8 @@ Architecture:
 
 下面介绍[ch_PP-OCRv3_det_cml.yml](../../configs/det/ch_PP-OCRv3/ch_PP-OCRv3_det_cml.yml)的配置文件参数：
 
+下面介绍[ch_PP-OCRv3_det_cml.yml](../../configs/det/ch_PP-OCRv3/ch_PP-OCRv3_det_cml.yml)的配置文件参数：
+
 ```yaml
 Architecture:
   name: DistillationModel  

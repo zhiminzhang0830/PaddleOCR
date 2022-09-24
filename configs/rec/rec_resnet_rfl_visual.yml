@@ -3,7 +3,7 @@ Global:
   epoch_num: 6
   log_smooth_window: 20
   print_batch_step: 50
-  save_model_dir: ../work_dir/rec_rfl/rec_resnet_rfl_visual/
+  save_model_dir: ./output/rec/rec_resnet_rfl_visual/
   save_epoch_step: 1
   # evaluation is run every 5000 iterations after the 4000th iteration
   eval_batch_step: [0, 5000]
@@ -70,7 +70,7 @@ Metric:
 Train:
   dataset:
     name: LMDBDataSet
-    data_dir: ./data/rfl_dataset2/training
+    data_dir: ./train_data/rfl_dataset2/training
     transforms:
       - DecodeImage: # load image
           img_mode: BGR
@@ -91,7 +91,7 @@ Train:
 Eval:
   dataset:
     name: LMDBDataSet
-    data_dir: ./rfl_dataset2/evaluation
+    data_dir: ./train_data/rfl_dataset2/evaluation
     transforms:
       - DecodeImage: # load image
           img_mode: BGR
